@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/', userAuth);
 app.use('/api',  passport.authenticate('jwt', {session: false}), workflowApi);
 app.use('/api',  passport.authenticate('jwt', {session: false}), commentApi);
+app.use('/api',  passport.authenticate('jwt', {session: false}), categoryApi);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

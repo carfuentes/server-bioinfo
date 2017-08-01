@@ -25,8 +25,8 @@ const workFlowSchema = new mongoose.Schema({
     required: [true, 'The workflow language is required']
   },
 
-  categories: {
-    type: Array, 
+  category: {
+    type: String, 
     required: [true, 'The workflow category is required']
 
   },

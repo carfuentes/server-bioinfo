@@ -5,8 +5,13 @@ const mongoose = require('mongoose');
 
 const Category = require('../models/category-model');
 
+//
+
+///GET THE CATEGORIES FOR DISPLAY
+
+////THE ROOTS
 router.get('/categories', (req, res, next) => {
-  Category.find({state: "Approved"},(err, categoryList) => {
+  Category.find({parent:"/"},(err, categoryList) => {
     if (err) {
       res.json(err);
       return;
@@ -15,67 +20,93 @@ router.get('/categories', (req, res, next) => {
   });
 });
 
-router.post('/categories', (req, res, next) => {
-  const theCategory = new Category({
-    title: req.body.title,
-    creator: req.user._id,
-    languages : req.body.languages,
-    file: req.body.file,
-    categories:req.body.categories
-  });
 
-  theCategory.save((err) => {
+
+////THE SUBTREES
+router.get('/categories/:catnames', (req, res, next) => {
+
+  Category.findOne({name:req.params.catnames},(err, categoryParent) => {
     if (err) {
       res.json(err);
       return;
     }
-
-    res.json({
-      message: 'New Category created!',
-      id: theCategory._id
+    
+    Category.find({parent: categoryParent.name},(err, categoryList) => {
+    if (err) {
+      res.json(err);
+      return;
+    }
+    
+    res.json(categoryList)
+    
     });
   });
 });
 
-router.get('/categories/:id', (req, res) => {
-  if(!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    res.status(400).json({ message: 'Specified id is not valid' });
-    return;
-  }
 
-  Category.findById(req.params.id, (err, theCategory) => {
+///GET THE WORKFLOWS FOR A NODE CATEGORY 
+router.get('/categories/:catname/workflows', (req, res) => {
+
+  Category.findOne({name:req.params.catname}).
+  populate("workflows").
+  exec((err, theCategory) => {
+      if (err) {
+        res.json(err);
+        return;
+      }
+      res.json(theCategory.workflows);
+    });
+});
+
+
+//MODIFY CATEGORIES
+
+//ADD A CATEGORY
+router.post('/categories', (req, res, next) => {
+
+  let name= req.body.name
+  let parent= req.body.parent
+ 
+  Category.findOne({name}, 'name', (err, foundCategory) => {
+    if (foundCategory) {
+      res.status(400).json({ message: 'The category already exists' });
+      return;
+    }
+
+    Category.findOne({name:parent}, (err,categoryParent)=> {
       if (err) {
         res.json(err);
         return;
       }
 
-      res.json(theCategory);
-    });
-});
+        console.log(categoryParent.path);
 
-router.put('/categories/:id', (req, res) => {
-  if(!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    res.status(400).json({ message: 'Specified id is not valid' });
-    return;
-  }
+       const theCategory = new Category({
+         name: name,
+         parent: parent,
+         path: categoryParent.path+"/"+name
+          });
 
-  //SE TIENEN QUE RELLENAR TODOS SINO SE QUEDA NULL
-  const updates = {
-    state: "Approved"
-  };
+        theCategory.save((err) => {
+          if (err) {
+            res.json(err);
+            return;
+          }
 
-  Category.findByIdAndUpdate(req.params.id, updates, (err) => {
-    if (err) {
-      res.json(err);
-      return;
-    }
+          res.json({
+            message: 'New Category created!',
+            id: theCategory._id
+          });
+    
+        })
 
-    res.json({
-      message: 'Category updated successfully'
     });
   });
-})
 
+});
+
+
+//DELETE A CATEGORY
 router.delete('/categories/:id', (req, res) => {
   if(!mongoose.Types.ObjectId.isValid(req.params.id)) {
     res.status(400).json({ message: 'Specified id is not valid' });
@@ -93,5 +124,10 @@ router.delete('/categories/:id', (req, res) => {
     });
   })
 });
+
+
+//UPDATE CATEGORY
+
+
 
 module.exports = router;

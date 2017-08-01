@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 const Workflow = require('../models/workflow-model');
 const User = require('../models/user-model');
+const Category = require('../models/category-model');
 
 router.get('/workflows', (req, res, next) => {
   Workflow.find((err, workflowsList) => {
@@ -43,26 +44,37 @@ router.post('/workflows', (req, res, next) => {
     creator: req.user._id,
     languages : req.body.languages,
     file: req.body.file,
-    categories:req.body.categories
+    category:req.body.category
   });
 
   theWorkFlow.save((err,workflow) => {
     if (err) {
       res.json(err);
       return;
+
     }
 
-    User.findByIdAndUpdate({_id:req.user._id}, {$push: {workflows:workflow._id}}, { 'new': true}, (err, user) => {
+    Category.findOneAndUpdate({name:req.body.categories}, {$push: {workflows:workflow._id}}, { 'new': true}, (err, user) => {
       if (err) {
         res.json(err);
         return;
       }
         
-       res.json({
-        message: 'New Workflow added to the user!',
-        id: workflow._id
+       User.findByIdAndUpdate({_id:req.user._id}, {$push: {workflows:workflow._id}}, { 'new': true}, (err, user) => {
+          if (err) {
+              res.json(err);
+              return;
+          }
+        
+          res.json({
+            message: 'New Workflow added to the user!',
+            id: workflow._id
+      
+            });
       
         });
+
+    
 
       })
   });
