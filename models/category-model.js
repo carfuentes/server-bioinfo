@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
 const categorySchema = new mongoose.Schema({
+
   name: {
     type: String,
     required: [true, 'The name is required']
@@ -12,6 +13,11 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: [true, 'The path is required']
   },
+  admin: {
+      type: Schema.Types.ObjectId, 
+      ref: 'User',  
+      default:null
+    },
   workflows: [{ 
       type: Schema.Types.ObjectId, 
       ref: 'Workflow', 

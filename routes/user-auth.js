@@ -10,9 +10,12 @@ const User = require('../models/user-model');
 const bcrypt = require('bcrypt');
 const bcryptSalt = 10;
 
+
 router.post('/signup', (req, res, next) => {
   let username = req.body.username;
   let password = req.body.password;
+  
+  //PONER RESTO DE FIELDS
 
   if (!username || !password) {
     res.status(400).json({ message: 'Provide username and password' });

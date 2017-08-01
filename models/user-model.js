@@ -7,32 +7,41 @@ const userSchema = new Schema({
     type: String,
     required: [true, 'The username is required']
   },
+
   password: {
     type: String,
     required: [true, 'The password is required']
   },
+
   image: {
     type: String,
     default:""
   },
+
   links: [
     { github: String },
     { twitter: String },
     { google: String }
 
   ],
+
   role: { //HAY QUE HACER UN SISTEMA DE ADMIN
     type: String,
     enum: ["user", "admin"],
     default: "user"
   },
+
   workflows: [{ 
       type: Schema.Types.ObjectId, 
-      ref: 'Workflow', 
-      default:null 
-    }]
+      ref: 'Workflow'
+    }],
+
+  messages: [
+    { user: { type: Schema.Types.ObjectId, ref: 'User' }, date: Date, text:String }
+  ]
   
 },
+
 {
   timestamps: {
     createdAt: 'created_at',

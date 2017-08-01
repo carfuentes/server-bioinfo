@@ -8,35 +8,40 @@ const workFlowSchema = new mongoose.Schema({
     type: String,
     required: [true, 'The workflow brand is required']
   },
-  name: {
-    type: String,
+
+  creator: {
+    type: Schema.Types.ObjectId,
+    ref:"User",
     required: [true, 'The workflow name is required']
   },
+
   file: {
     type: String, 
     required: [true, 'The workflow file is required']
   },
+
   languages: {
     type: Array,
     required: [true, 'The workflow language is required']
   },
 
   categories: {
-    type: Schema.Types.ObjectId, 
-    ref:"Categories",
+    type: Array, 
     required: [true, 'The workflow category is required']
 
   },
-  comments: {
+
+  comments: [{
     type: Schema.Types.ObjectId,
-    ref: "Comments",
-    default:null
-  },
+    ref: "Comment"
+  }],
+
   state: { //HAY QUE PONERLO POR DEFECTO COMO IN COURSE
     type:String,
-    enum:["Approved", "In course "],
-    default:"Approved"
+    enum:["Approved", "In course"],
+    default:"In course"
   }
+
 },
 {
   timestamps: {

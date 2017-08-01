@@ -6,7 +6,10 @@ var cors = require('cors');
 
 var passport = require('./config/passport');
 
-//var phonesApi = require('./routes/phones-api');
+
+var categoryApi = require('./routes/category-api');
+var commentApi = require('./routes/comment-api');
+var workflowApi = require('./routes/workflow-api');
 var userAuth = require('./routes/user-auth');
 
 // database connection
@@ -21,7 +24,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', userAuth);
-//app.use('/api',  passport.authenticate('jwt', {session: false}), phonesApi);
+app.use('/api',  passport.authenticate('jwt', {session: false}), workflowApi);
+app.use('/api',  passport.authenticate('jwt', {session: false}), commentApi);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
