@@ -7,7 +7,7 @@ const categories = [
   {
     name:  'Computational-System-Biology',
     path: "/Computational-System-Biology",
-    parent:"/"
+    parent:"/",
 
 },
 {

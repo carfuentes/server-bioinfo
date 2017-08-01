@@ -7,8 +7,10 @@ const Workflow = require('../models/workflow-model');
 const User = require('../models/user-model');
 const Category = require('../models/category-model');
 
+
+//GET USER WORKFLOWS
 router.get('/workflows', (req, res, next) => {
-  Workflow.find((err, workflowsList) => {
+  Workflow.find({creator:req.user._id},(err, workflowsList) => {
     if (err) {
       res.json(err);
       return;
@@ -19,7 +21,7 @@ router.get('/workflows', (req, res, next) => {
 
 
 router.get('/workflows/approved', (req, res, next) => {
-  Workflow.find({state: "Approved"},(err, workflowsList) => {
+  Workflow.find({creator:req.user._id},{state: "Approved"},(err, workflowsList) => {
     if (err) {
       res.json(err);
       return;
@@ -29,7 +31,7 @@ router.get('/workflows/approved', (req, res, next) => {
 });
 
 router.get('/workflows/notapproved', (req, res, next) => {
-  Workflow.find({state: "In course"},(err, workflowsList) => {
+  Workflow.find({creator:req.user._id},{state: "In course"},(err, workflowsList) => {
     if (err) {
       res.json(err);
       return;
@@ -54,7 +56,7 @@ router.post('/workflows', (req, res, next) => {
 
     }
 
-    Category.findOneAndUpdate({name:req.body.categories}, {$push: {workflows:workflow._id}}, { 'new': true}, (err, user) => {
+    Category.findOneAndUpdate({name:req.body.category}, {$push: {workflows:workflow._id}}, { 'new': true}, (err, user) => {
       if (err) {
         res.json(err);
         return;

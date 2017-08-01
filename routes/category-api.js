@@ -23,21 +23,28 @@ router.get('/categories', (req, res, next) => {
 
 
 ////THE SUBTREES
-router.get('/categories/:catnames', (req, res, next) => {
+router.get('/categories/:catname', (req, res, next) => {
+  const catName=req.params.catname;
 
-  Category.findOne({name:req.params.catnames},(err, categoryParent) => {
+  Category.findOne({name:catName},(err, categoryParent) => {
     if (err) {
       res.json(err);
       return;
     }
-    
+
     Category.find({parent: categoryParent.name},(err, categoryList) => {
     if (err) {
       res.json(err);
       return;
     }
-    
+    if (categoryList.length === 0) {
+      console.log("entré")
+      res.redirect(`/api/categories/${catName}/workflows`);
+      return;
+    } 
+   
     res.json(categoryList)
+    
     
     });
   });
@@ -48,7 +55,10 @@ router.get('/categories/:catnames', (req, res, next) => {
 router.get('/categories/:catname/workflows', (req, res) => {
 
   Category.findOne({name:req.params.catname}).
-  populate("workflows").
+  populate({
+    path:"workflows",
+    match:{state: {$eq: "Approved"}}
+  }).
   exec((err, theCategory) => {
       if (err) {
         res.json(err);
@@ -59,13 +69,27 @@ router.get('/categories/:catname/workflows', (req, res) => {
 });
 
 
-//MODIFY CATEGORIES
+//MODIFY CATEGORIES (ADMINS)
+
+
+//SEE CATEGORIES THAT I ADMIN
+router.get('/admin/:admin/categories', (req, res, next) => {
+  Category.find({admin:req.params.admin, "workflows.0": {$exists: true} },(err, categoryList) => {
+    if (err) {
+      res.json(err);
+      return;
+    }
+    res.json(categoryList);
+  });
+});
+
 
 //ADD A CATEGORY
 router.post('/categories', (req, res, next) => {
 
   let name= req.body.name
   let parent= req.body.parent
+  let admin=req.user._id;
  
   Category.findOne({name}, 'name', (err, foundCategory) => {
     if (foundCategory) {
@@ -79,11 +103,10 @@ router.post('/categories', (req, res, next) => {
         return;
       }
 
-        console.log(categoryParent.path);
-
        const theCategory = new Category({
          name: name,
          parent: parent,
+         admin:admin,
          path: categoryParent.path+"/"+name
           });
 
@@ -127,6 +150,25 @@ router.delete('/categories/:id', (req, res) => {
 
 
 //UPDATE CATEGORY
+
+
+//SEE WORKFLOWS IN COURSE BY CATEGORY
+
+router.get('/categories/:catname/workflows', (req, res) => {
+
+  Category.findOne({name:req.params.catname}).
+  populate({
+    path:"workflows",
+    match:{state: {$eq: "In course"}}
+  }).
+  exec((err, theCategory) => {
+      if (err) {
+        res.json(err);
+        return;
+      }
+      res.json(theCategory.workflows);
+    });
+});
 
 
 

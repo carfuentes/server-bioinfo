@@ -39,7 +39,7 @@ const workFlowSchema = new mongoose.Schema({
   state: { //HAY QUE PONERLO POR DEFECTO COMO IN COURSE
     type:String,
     enum:["Approved", "In course"],
-    default:"In course"
+    default:"Approved"
   }
 
 },
