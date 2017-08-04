@@ -2,21 +2,80 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-
 const Category = require('../models/category-model');
 
+function convertToHierarchy(arry) { 
+
+    var nodeObjects = createStructure(arry);
+
+    for (var i = nodeObjects.length - 1; i >= 0; i--) {
+        var currentNode = nodeObjects[i];
+
+        //Skip over root node.
+        if (currentNode.element.parent == "/") {
+            continue;
+        }
+
+        var parent = getParent(currentNode, nodeObjects);
+
+        if (parent == null) {
+            continue;
+        }
+
+        parent.children.push(currentNode);
+        nodeObjects.splice(i, 1);
+    }
+
+    //What remains in nodeObjects will be the root nodes.
+    return nodeObjects;
+}
+
+function createStructure(nodes) {
+    var objects = [];
+
+    for (var i = 0; i < nodes.length; i++) {
+        objects.push({ text: nodes[i].name, value: nodes[i].name, element: nodes[i], children: [] });
+    }
+
+    return objects;
+}
+
+function getParent(child, nodes) {
+    var parent = null;
+
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].element.name == child.element.parent) {
+            return nodes[i];
+        }
+    }
+
+    return parent;
+}
 //
 
 ///GET THE CATEGORIES FOR DISPLAY
 
-////THE ROOTS
 router.get('/categories', (req, res, next) => {
-  Category.find({parent:"/"},(err, categoryList) => {
+ 
+  Category.find({}, null, {sort: {path: 1}}, function(err, docs) {
     if (err) {
       res.json(err);
       return;
     }
-    res.json(categoryList);
+    
+    res.json(convertToHierarchy(docs))
+      
+    })
+});
+
+////THE ROOTS
+router.get('/categorie/root', (req, res, next) => {
+  Category.find({parent:"/"},(err, categoryChildren) => {
+    if (err) {
+      res.json(err);
+      return;
+    }
+    res.json(categoryChildren);
   });
 });
 
@@ -32,18 +91,13 @@ router.get('/categories/:catname', (req, res, next) => {
       return;
     }
 
-    Category.find({parent: categoryParent.name},(err, categoryList) => {
+    Category.find({parent: categoryParent.name},(err, categoryChildren) => {
     if (err) {
       res.json(err);
       return;
     }
-    if (categoryList.length === 0) {
-      console.log("entré")
-      res.redirect(`/api/categories/${catName}/workflows`);
-      return;
-    } 
    
-    res.json(categoryList)
+    res.json(categoryChildren)
     
     
     });
@@ -74,12 +128,12 @@ router.get('/categories/:catname/workflows', (req, res) => {
 
 //SEE CATEGORIES THAT I ADMIN
 router.get('/admin/:admin/categories', (req, res, next) => {
-  Category.find({admin:req.params.admin, "workflows.0": {$exists: true} },(err, categoryList) => {
+  Category.find({admin:req.params.admin, "workflows.0": {$exists: true} },(err, categoryChildren) => {
     if (err) {
       res.json(err);
       return;
     }
-    res.json(categoryList);
+    res.json(categoryChildren);
   });
 });
 

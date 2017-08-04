@@ -41,6 +41,10 @@ const categorySchema = new mongoose.Schema({
   }
 });
 
+categorySchema.statics.findChildrend = function(name, cb) {
+  return this.find({ parent: name }, cb);
+};
+
 const Category = mongoose.model('Category', categorySchema);
 
 module.exports = Category;

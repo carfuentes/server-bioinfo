@@ -110,14 +110,15 @@ router.put('/workflows/:id', (req, res) => {
     state: "Approved"
   };
 
-  Workflow.findByIdAndUpdate(req.params.id, updates, (err) => {
+  Workflow.findByIdAndUpdate(req.params.id, updates, {'new':true},(err, workflow) => {
     if (err) {
       res.json(err);
       return;
     }
 
     res.json({
-      message: 'Workflow updated successfully'
+      message: 'Workflow updated successfully',
+      workflow:workflow
     });
   });
 })
