@@ -129,12 +129,17 @@ router.get('/categories/:catname/workflows', (req, res) => {
 //SEE CATEGORIES THAT I ADMIN
 router.get('/admin/categories', (req, res, next) => {
   console.log("entro")
-  Category.find({admin:req.user._id },(err, categoryChildren) => {
+  Category.find({admin:req.user._id })
+  .populate({
+    path:"workflows",
+    match:{state: {$eq: "In course"}}
+  }).
+  exec((err, categories) => {
     if (err) {
       res.json(err);
       return;
     }
-    res.json(categoryChildren);
+    res.json(categories);
   });
 });
 
