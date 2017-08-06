@@ -127,8 +127,9 @@ router.get('/categories/:catname/workflows', (req, res) => {
 
 
 //SEE CATEGORIES THAT I ADMIN
-router.get('/admin/:admin/categories', (req, res, next) => {
-  Category.find({admin:req.params.admin, "workflows.0": {$exists: true} },(err, categoryChildren) => {
+router.get('/admin/categories', (req, res, next) => {
+  console.log("entro")
+  Category.find({admin:req.user._id },(err, categoryChildren) => {
     if (err) {
       res.json(err);
       return;
@@ -181,6 +182,7 @@ router.post('/categories', (req, res, next) => {
   });
 
 });
+
 
 
 //DELETE A CATEGORY

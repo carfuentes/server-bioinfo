@@ -4,6 +4,7 @@ const router = express.Router();
 const passport = require('../config/passport');
 const jwt = require('jsonwebtoken');
 const jwtOptions = require('../config/jwt');
+const upload = require('../config/multer');
 
 const User = require('../models/user-model');
 
@@ -32,9 +33,18 @@ router.post('/signup', (req, res, next) => {
     let hashPass = bcrypt.hashSync(password, salt);
 
     const theUser = new User({
+      name:req.body.name,
       username,
-      password: hashPass
+      password: hashPass,
+      image:req.body.image,
+      links: {
+        github:req.body.github,
+        twitter:req.body.twitter
+      }
     });
+
+    console.log(theUser)
+
 
     theUser.save((err, user) => {
       if (err) {

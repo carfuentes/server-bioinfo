@@ -17,7 +17,7 @@ const workFlowSchema = new mongoose.Schema({
 
   file: {
     type: String, 
-    required: [true, 'The workflow file is required']
+    default:""
   },
 
   languages: {

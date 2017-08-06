@@ -3,6 +3,10 @@
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 const userSchema = new Schema({
+  name: {
+    type: String,
+    required: [true, 'The username is required']
+  },
   username: {
     type: String,
     required: [true, 'The username is required']
@@ -18,12 +22,11 @@ const userSchema = new Schema({
     default:""
   },
 
-  links: [
-    { github: String },
-    { twitter: String },
-    { google: String }
+  links: {
+    github: { type: String, default:"usergit" },
+    twitter: { type: String, default:"usertwitter" },
 
-  ],
+  },
 
   role: { //HAY QUE HACER UN SISTEMA DE ADMIN
     type: String,

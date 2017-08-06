@@ -21,7 +21,7 @@ router.get('/workflows', (req, res, next) => {
 
 
 router.get('/workflows/approved', (req, res, next) => {
-  Workflow.find({creator:req.user._id},{state: "Approved"},(err, workflowsList) => {
+  Workflow.find({creator:req.user._id, state: "Approved"},(err, workflowsList) => {
     if (err) {
       res.json(err);
       return;
@@ -31,7 +31,7 @@ router.get('/workflows/approved', (req, res, next) => {
 });
 
 router.get('/workflows/notapproved', (req, res, next) => {
-  Workflow.find({creator:req.user._id},{state: "In course"},(err, workflowsList) => {
+  Workflow.find({creator:req.user._id, state: "In course"},(err, workflowsList) => {
     if (err) {
       res.json(err);
       return;
