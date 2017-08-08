@@ -110,11 +110,37 @@ router.put('/workflows/:id', (req, res) => {
   }
 
   //SE TIENEN QUE RELLENAR TODOS SINO SE QUEDA NULL
-  const updates = {
-    state: "Approved"
-  };
+  const updates = new Workflow({
+    title: req.body.title,
+    creator: {
+      id:req.user._id,
+      username:req.user.username 
+    },
+    
+    languages : req.body.languages,
+    file: req.body.file,
+    category:req.body.category
+  });
 
   Workflow.findByIdAndUpdate(req.params.id, updates, {'new':true},(err, workflow) => {
+    if (err) {
+      res.json(err);
+      return;
+    }
+
+    res.json({
+      message: 'Workflow updated successfully',
+      workflow:workflow
+    });
+  });
+})
+
+router.put('/workflows/:id/approve', (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400).json({ message: 'Specified id is not valid' });
+    return;
+  }
+  Workflow.findByIdAndUpdate(req.params.id, {$set: {state:"Approved"}}, {'new':true},(err, workflow) => {
     if (err) {
       res.json(err);
       return;
