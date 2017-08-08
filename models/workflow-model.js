@@ -10,9 +10,8 @@ const workFlowSchema = new mongoose.Schema({
   },
 
   creator: {
-    type: Schema.Types.ObjectId,
-    ref:"User",
-    required: [true, 'The workflow name is required']
+    id: { type: Schema.Types.ObjectId, ref: "User", required: [true, 'The workflow name is required'] },
+    username:  { type: String, required: [true, 'The workflow name is required'] },
   },
 
   file: {

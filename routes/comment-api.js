@@ -33,7 +33,10 @@ router.post('/workflows/:id/comments', (req, res, next) => {
 
   const theComment = new Comment({
     title: req.body.title,
-    creator: req.user._id,
+    creator: {
+      id:req.user._id,
+      username:req.user.username
+    },
     text : req.body.text,
     workflow:req.params.id
   });
@@ -73,7 +76,7 @@ router.post('/workflows/:id/comments', (req, res, next) => {
 
 router.get('/comments', (req, res) => {
 
-  Comment.find({creator: req.user._id}, (err, commentList) => {
+  Comment.find({"creator.id": req.user._id}, (err, commentList) => {
       if (err) {
         res.json(err);
         return;

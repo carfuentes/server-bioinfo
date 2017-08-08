@@ -20,8 +20,8 @@ router.get('/workflows', (req, res, next) => {
 });
 
 
-router.get('/workflows/approved', (req, res, next) => {
-  Workflow.find({creator:req.user._id, state: "Approved"},(err, workflowsList) => {
+router.get('/workflows/user/:id/approved', (req, res, next) => {
+  Workflow.find({"creator.id":req.params.id, state: "Approved"},(err, workflowsList) => {
     if (err) {
       res.json(err);
       return;
@@ -30,8 +30,8 @@ router.get('/workflows/approved', (req, res, next) => {
   });
 });
 
-router.get('/workflows/notapproved', (req, res, next) => {
-  Workflow.find({creator:req.user._id, state: "In course"},(err, workflowsList) => {
+router.get('/workflows/user/:id/notapproved', (req, res, next) => {
+  Workflow.find({"creator.id":req.params.id, state: "In course"},(err, workflowsList) => {
     if (err) {
       res.json(err);
       return;
@@ -43,7 +43,11 @@ router.get('/workflows/notapproved', (req, res, next) => {
 router.post('/workflows', (req, res, next) => {
   const theWorkFlow = new Workflow({
     title: req.body.title,
-    creator: req.user._id,
+    creator: {
+      id:req.user._id,
+      username:req.user.username 
+    },
+    
     languages : req.body.languages,
     file: req.body.file,
     category:req.body.category
@@ -89,7 +93,7 @@ router.get('/workflows/:id', (req, res) => {
   }
 
   Workflow.findById(req.params.id).
-  populate("creator").
+  populate("creator.id").
   exec((err, theWorkFlow) => {
       if (err) {
         res.json(err);

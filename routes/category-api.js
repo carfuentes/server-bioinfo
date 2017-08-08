@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const passport=require("passport");
 
 const Category = require('../models/category-model');
 
@@ -34,7 +35,7 @@ function createStructure(nodes) {
     var objects = [];
 
     for (var i = 0; i < nodes.length; i++) {
-        objects.push({ text: nodes[i].name, value: nodes[i].name, element: nodes[i], children: [] });
+        objects.push({ id: nodes[i].name, name: nodes[i].name, element: nodes[i], children: [] });
     }
 
     return objects;
@@ -127,7 +128,7 @@ router.get('/categories/:catname/workflows', (req, res) => {
 
 
 //SEE CATEGORIES THAT I ADMIN
-router.get('/admin/categories', (req, res, next) => {
+router.get('/admin/categories', passport.authenticate('jwt', {session: false}),(req, res, next) => {
   console.log("entro")
   Category.find({admin:req.user._id })
   .populate({

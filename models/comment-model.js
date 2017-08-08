@@ -15,9 +15,8 @@ const commentSchema = new mongoose.Schema({
   },
 
   creator: {
-     type: Schema.Types.ObjectId, 
-     ref: 'User', 
-     required: [true, 'The creator is required']
+     id: {type: Schema.Types.ObjectId,  ref: 'User', required: [true, 'The creator is required']  }, 
+     username: { type:String, required: [true, 'The creator is required']  }
   },
 
   workflow: {
