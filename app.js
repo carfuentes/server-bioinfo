@@ -12,6 +12,7 @@ var commentApi = require('./routes/comment-api');
 var workflowApi = require('./routes/workflow-api');
 var userAuth = require('./routes/user-auth');
 var userApi = require('./routes/user-api');
+var converApi = require('./routes/conversation-api');
 
 // database connection
 require('./config/database');
@@ -29,6 +30,7 @@ app.use('/',  categoryApi);
 app.use('/api',  passport.authenticate('jwt', {session: false}), userApi);
 app.use('/api',  passport.authenticate('jwt', {session: false}), workflowApi);
 app.use('/api',  passport.authenticate('jwt', {session: false}), commentApi);
+app.use('/api',  passport.authenticate('jwt', {session: false}), converApi);
 
 
 // catch 404 and forward to error handler

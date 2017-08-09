@@ -129,7 +129,6 @@ router.get('/categories/:catname/workflows', (req, res) => {
 
 //SEE CATEGORIES THAT I ADMIN
 router.get('/admin/categories', passport.authenticate('jwt', {session: false}),(req, res, next) => {
-  console.log("entro")
   Category.find({admin:req.user._id })
   .populate({
     path:"workflows",
@@ -146,7 +145,7 @@ router.get('/admin/categories', passport.authenticate('jwt', {session: false}),(
 
 
 //ADD A CATEGORY
-router.post('/categories', (req, res, next) => {
+router.post('/categories', passport.authenticate('jwt', {session: false}),(req, res, next) => {
 
   let name= req.body.name
   let parent= req.body.parent

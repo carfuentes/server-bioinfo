@@ -39,9 +39,9 @@ const userSchema = new Schema({
       ref: 'Workflow'
     }],
 
-  messages: [
-    { user: { type: Schema.Types.ObjectId, ref: 'User' }, date: Date, text:String }
-  ]
+  conversations: [{ 
+     type: Schema.Types.ObjectId, ref: 'Conversation' 
+    }]
   
 },
 
