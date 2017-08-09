@@ -103,7 +103,7 @@ router.get('/workflows/:id', (req, res) => {
     });
 });
 
-router.put('/workflows/:id', (req, res) => {
+router.put('/workflows/:id/update', (req, res) => {
   if(!mongoose.Types.ObjectId.isValid(req.params.id)) {
     res.status(400).json({ message: 'Specified id is not valid' });
     return;
