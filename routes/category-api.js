@@ -80,6 +80,28 @@ router.get('/categorie/root', (req, res, next) => {
   });
 });
 
+//the parents
+router.get('/categories/parents', (req, res, next) => {
+  Category.find({children:true},(err, categoryParents) => {
+    if (err) {
+      res.json(err);
+      return;
+    }
+    res.json(categoryParents);
+  });
+});
+
+
+//the leaves
+router.get('/categories/leaves', (req, res, next) => {
+  Category.find({children:false},(err, categoryLeaves) => {
+    if (err) {
+      res.json(err);
+      return;
+    }
+    res.json(categoryLeaves);
+  });
+});
 
 
 ////THE SUBTREES
@@ -142,6 +164,8 @@ router.get('/admin/categories', passport.authenticate('jwt', {session: false}),(
     res.json(categories);
   });
 });
+
+
 
 
 //ADD A CATEGORY
@@ -210,26 +234,25 @@ router.delete('/categories/:id', (req, res) => {
 });
 
 
-//UPDATE CATEGORY
 
 
 //SEE WORKFLOWS IN COURSE BY CATEGORY
 
-router.get('/categories/:catname/workflows', (req, res) => {
+// router.get('/categories/:catname/workflows', (req, res) => {
 
-  Category.findOne({name:req.params.catname}).
-  populate({
-    path:"workflows",
-    match:{state: {$eq: "In course"}}
-  }).
-  exec((err, theCategory) => {
-      if (err) {
-        res.json(err);
-        return;
-      }
-      res.json(theCategory.workflows);
-    });
-});
+//   Category.findOne({name:req.params.catname}).
+//   populate({
+//     path:"workflows",
+//     match:{state: {$eq: "In course"}}
+//   }).
+//   exec((err, theCategory) => {
+//       if (err) {
+//         res.json(err);
+//         return;
+//       }
+//       res.json(theCategory.workflows);
+//     });
+// });
 
 
 

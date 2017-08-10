@@ -16,8 +16,9 @@ router.post('/workflow/:id/send', (req, res) => {
       workflow:req.params.id,
       messages: [
           {
+            creator: { id:admin, username:req.user.username},
             date: new Date(),
-            subject:req.body.subject,
+            title:req.body.title,
             text:req.body.text
           }
       ]
@@ -48,26 +49,12 @@ router.post('/workflow/:id/send', (req, res) => {
 });
 
 router.get('/conversations', (req, res) => {
-    Conversation.find({user:req.user._id}, (err, converList) => {
+   Conversation.find({user:req.user._id}, (err, converList) => {
         if (err) {
             res.json(err);
             return;
         }
-        converList.forEach((conver, i, array)=> {
-            Conversation.findById(conver._id)
-                        .populate("admin")
-                        .populate("workflow")
-                        .exec((err, conversation)=> {
-                            if(err) {
-                                res.json()
-                                return
-                            }
-                            if(i=== array.length-1 ) {
-                                res.json(converList)
-                            }
-                            
-                        })
-        });
+       res.json(converList)
     });
 });
 
@@ -98,8 +85,12 @@ router.get('/conversations/:id', (req, res) => {
 
 router.post('/conversations/:id/reply', (req, res) => {
     const newMessage= {
+            creator: {
+                id: req.user._id,
+                username: req.user.username
+            },
             date: new Date(),
-            subject:req.body.subject,
+            title:req.body.title,
             text:req.body.text
       
     }

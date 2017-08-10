@@ -14,6 +14,11 @@ const categorySchema = new mongoose.Schema({
     type: String,
     default:null
 
+  }, 
+  
+  children: {
+    type:Boolean,
+    default:false,
   },
 
   path: {

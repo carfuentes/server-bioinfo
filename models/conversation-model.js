@@ -18,8 +18,12 @@ const conversationSchema = new mongoose.Schema({
    }, 
    
    messages: [{
+      creator: {
+                  id: {type: Schema.Types.ObjectId,  ref: 'User', required: [true, 'The creator is required']  }, 
+                  username: { type:String, required: [true, 'The creator is required']  }
+      },
       date: Date,
-      subject: String,
+      title: String,
       text: String
     }] 
 
