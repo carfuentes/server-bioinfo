@@ -10,42 +10,62 @@ router.post('/workflow/:id/send', (req, res) => {
   let user=req.body.creatorId
   let admin=req.user._id
 
-  let newConver= new Conversation({
-      user: user,
-      admin: admin,
-      workflow:req.params.id,
-      messages: [
-          {
+  let message={
             creator: { id:admin, username:req.user.username},
             date: new Date(),
             title:req.body.title,
             text:req.body.text
           }
-      ]
+
+  let newConver= new Conversation({
+      user: user,
+      admin: admin,
+      workflow:req.params.id,
+      messages: [message]
 
   })
-  
-   newConver.save((err,newConver) => {
-    if (err) {
-      res.json(err);
-      return;
-    }
 
-    User.findByIdAndUpdate(user, {$push: {conversations: newConver._id}},{ 'new': true}, (err, user) => {
-        if (err) {
+    Conversation.findOne({workflow:req.params.id}, (err,conver)=> {
+         if (err) {
             res.json(err);
             return;
         }
-            User.findByIdAndUpdate(admin, {$push: {conversations: newConver._id}},{ 'new': true}, (err, admin) => {
-                if (err) {
+
+        if(conver===null) {
+              newConver.save((err,newConver) => {
+                    if (err) {
                     res.json(err);
                     return;
-                }
+                    }
 
-                res.json({message:`${admin.username} and ${user.username} have started a conver `});
-            });
-        })
-   });
+                    User.findByIdAndUpdate(user, {$push: {conversations: newConver._id}},{ 'new': true}, (err, user) => {
+                        if (err) {
+                            res.json(err);
+                            return;
+                        }
+                            User.findByIdAndUpdate(admin, {$push: {conversations: newConver._id}},{ 'new': true}, (err, admin) => {
+                                if (err) {
+                                    res.json(err);
+                                    return;
+                                }
+
+                                res.json({message:`${admin.username} and ${user.username} have started a conver `});
+                            });
+                        })
+                });
+
+            
+        
+            return
+            }
+        conver.messages.push(message);
+        conver.save((err=> {
+            if(err) return res.josn(err);
+            res.json(conver);
+        }))
+    })
+  
+ 
 });
 
 router.get('/conversations', (req, res) => {

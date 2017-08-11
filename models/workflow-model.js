@@ -8,6 +8,10 @@ const workFlowSchema = new mongoose.Schema({
     type: String,
     required: [true, 'The workflow brand is required']
   },
+  description: {
+    type: String,
+    required: [true, 'The workflow brand is required']
+  },
 
   creator: {
     id: { type: Schema.Types.ObjectId, ref: "User", required: [true, 'The workflow name is required'] },

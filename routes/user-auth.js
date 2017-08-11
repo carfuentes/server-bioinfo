@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const jwtOptions = require('../config/jwt');
 const upload = require('../config/multer');
 
+const mongoose = require('mongoose');
 const User = require('../models/user-model');
 
 const bcrypt = require('bcrypt');
@@ -89,6 +90,24 @@ router.post('/login', (req, res, next) => {
   });
 });
 
+router.get('/user/:id', (req, res, next) => {
+  if(!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400).json({ message: 'Specified id is not valid' });
+    return;
+  }
+
+
+  User.findById(req.params.id, (err, theUser) => {
+      if (err) {
+        res.json(err);
+        return;
+      }
+       res.json(theUser);
+
+      })
+
+
+});
 
 
 module.exports = router;

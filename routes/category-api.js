@@ -5,6 +5,7 @@ const passport=require("passport");
 
 const Category = require('../models/category-model');
 
+
 function convertToHierarchy(arry) { 
 
     var nodeObjects = createStructure(arry);
@@ -238,21 +239,21 @@ router.delete('/categories/:id', (req, res) => {
 
 //SEE WORKFLOWS IN COURSE BY CATEGORY
 
-// router.get('/categories/:catname/workflows', (req, res) => {
+router.get('/categories/:catname/:regex/workflows', (req, res) => {
 
-//   Category.findOne({name:req.params.catname}).
-//   populate({
-//     path:"workflows",
-//     match:{state: {$eq: "In course"}}
-//   }).
-//   exec((err, theCategory) => {
-//       if (err) {
-//         res.json(err);
-//         return;
-//       }
-//       res.json(theCategory.workflows);
-//     });
-// });
+  Category.findOne({name:req.params.catname}).
+  populate({
+    path:"workflows",
+    match:{state: {$eq: "In course"}, title: { $regex: req.params.regex, $options: 'i' } }
+  }).
+  exec((err, theCategory) => {
+      if (err) {
+        res.json(err);
+        return;
+      }
+      res.json(theCategory.workflows);
+    });
+});
 
 
 

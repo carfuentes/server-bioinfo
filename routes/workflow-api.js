@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-
+const upload = require('../config/multer');
 
 const Workflow = require('../models/workflow-model');
 const User = require('../models/user-model');
@@ -43,6 +43,7 @@ router.get('/workflows/user/:id/notapproved', (req, res, next) => {
 router.post('/workflows', (req, res, next) => {
   const theWorkFlow = new Workflow({
     title: req.body.title,
+    description:req.body.description,
     creator: {
       id:req.user._id,
       username:req.user.username 
@@ -60,11 +61,12 @@ router.post('/workflows', (req, res, next) => {
 
     }
 
-    Category.findOneAndUpdate({name:req.body.category}, {$push: {workflows:workflow._id}}, { 'new': true}, (err, user) => {
+    Category.findOneAndUpdate({name:req.body.category}, {$push: {workflows:workflow._id}}, { 'new': true}, (err, category) => {
       if (err) {
         res.json(err);
         return;
       }
+      console.log(category)
         
        User.findByIdAndUpdate({_id:req.user._id}, {$push: {workflows:workflow._id}}, { 'new': true}, (err, user) => {
           if (err) {
@@ -110,28 +112,38 @@ router.put('/workflows/:id/update', (req, res) => {
   }
 
   //SE TIENEN QUE RELLENAR TODOS SINO SE QUEDA NULL
-  const updates = new Workflow({
+  const updates ={
     title: req.body.title,
-    creator: {
-      id:req.user._id,
-      username:req.user.username 
-    },
-    
+    description:req.body.description,
     languages : req.body.languages,
     file: req.body.file,
     category:req.body.category
-  });
+  };
 
-  Workflow.findByIdAndUpdate(req.params.id, updates, {'new':true},(err, workflow) => {
+  console.log(req.params.id)
+  Workflow.findByIdAndUpdate(req.params.id, updates, (err, workflow) => {
     if (err) {
       res.json(err);
       return;
-    }
+    } 
+    Category.findOneAndUpdate({name:workflow.category}, {$pull: {workflows:workflow._id}}, { 'new': true}, (err, category) => {
+      if (err) {
+        res.json(err);
+        return;
+      }
 
-    res.json({
-      message: 'Workflow updated successfully',
-      workflow:workflow
-    });
+      Category.findOneAndUpdate({name:req.body.category}, {$push: {workflows:workflow._id}}, { 'new': true}, (err, category) => {
+      if (err) {
+        res.json(err);
+        return;
+      }
+  
+        res.json({
+          message: 'Workflow updated successfully',
+          workflow:workflow
+        });
+        });
+      });
   });
 })
 
