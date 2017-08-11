@@ -9,26 +9,7 @@ const Category = require('../models/category-model');
 
 
 //GET USER WORKFLOWS
-router.get('/workflows', (req, res, next) => {
-  Workflow.find({creator:req.user._id},(err, workflowsList) => {
-    if (err) {
-      res.json(err);
-      return;
-    }
-    res.json(workflowsList);
-  });
-});
 
-
-router.get('/workflows/user/:id/approved', (req, res, next) => {
-  Workflow.find({"creator.id":req.params.id, state: "Approved"},(err, workflowsList) => {
-    if (err) {
-      res.json(err);
-      return;
-    }
-    res.json(workflowsList);
-  });
-});
 
 router.get('/workflows/user/:id/notapproved', (req, res, next) => {
   Workflow.find({"creator.id":req.params.id, state: "In course"},(err, workflowsList) => {
@@ -86,23 +67,6 @@ router.post('/workflows', (req, res, next) => {
 
       })
   });
-});
-
-router.get('/workflows/:id', (req, res) => {
-  if(!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    res.status(400).json({ message: 'Specified id is not valid' });
-    return;
-  }
-
-  Workflow.findById(req.params.id).
-  populate("creator.id").
-  exec((err, theWorkFlow) => {
-      if (err) {
-        res.json(err);
-        return;
-      }
-      res.json({ workflow:theWorkFlow, user:theWorkFlow.creator});
-    });
 });
 
 router.put('/workflows/:id/update', (req, res) => {

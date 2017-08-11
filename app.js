@@ -10,6 +10,7 @@ var passport = require('./config/passport');
 var categoryApi = require('./routes/category-api');
 var commentApi = require('./routes/comment-api');
 var workflowApi = require('./routes/workflow-api');
+var workflowPublic = require('./routes/workflow');
 var userAuth = require('./routes/user-auth');
 var userApi = require('./routes/user-api');
 var converApi = require('./routes/conversation-api');
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', userAuth);
+app.use('/', workflowPublic);
 app.use('/',  categoryApi);
 app.use('/api',  passport.authenticate('jwt', {session: false}), userApi);
 app.use('/api',  passport.authenticate('jwt', {session: false}), workflowApi);

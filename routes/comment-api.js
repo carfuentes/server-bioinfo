@@ -5,25 +5,6 @@ const mongoose = require('mongoose');
 const Workflow = require('../models/workflow-model');
 const Comment = require('../models/comment-model');
 
-router.get('/workflows/:id/comments', (req, res, next) => {
-  if(!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    res.status(400).json({ message: 'Specified id is not valid' });
-    return;
-  }
-
-  Workflow.findById(req.params.id).
-  populate("comments").
-  exec((err, theWorkFlow) => {
-      if (err) {
-        res.json(err);
-        return;
-      }
-       res.json(theWorkFlow.comments);
-
-      })
-
-
-});
 
 router.post('/workflows/:id/comments', (req, res, next) => {
   if(!mongoose.Types.ObjectId.isValid(req.params.id)) {
