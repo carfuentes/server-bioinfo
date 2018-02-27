@@ -1,4 +1,4 @@
-# IronHack Phone API
+# IronHack API
 
 An example app with JSON API using Express, Passport and JWT. There is a sample [client Angular 2 app](https://github.com/assimovt/ironhack-phone-app) that consumes this API.
 
